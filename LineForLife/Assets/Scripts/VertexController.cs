@@ -1,42 +1,25 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class VertexController : MonoBehaviour
 {
-
-	public UIMeshLine drawLine;
 	public RectTransform rect;
-	// Use this for initialization
-	void Start ()
-	{
-		
-	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
-		
+	public Vector2 Cordinate;
+
+	private Action<Vector2> Click;
+
+	public void InitVertex(float size, Vector2 cor, Action<Vector2> click){
+		rect.sizeDelta = new Vector2 (size, size);
+		Cordinate = cor;
+		Click = click;
 	}
 
 	public void ClickVertex ()
 	{
-		if (drawLine.points.Count == 0) {
-			LinePoint linePoint = new LinePoint ();
-			linePoint.point = rect.anchoredPosition;
-			drawLine.points.Add (linePoint);
-			linePoint = new LinePoint ();
-			linePoint.point = rect.anchoredPosition;
-			drawLine.points.Add (linePoint);
-		} else {
-			LeanTween.value (drawLine.gameObject, drawLine.points [drawLine.points.Count - 1].point, rect.anchoredPosition, 1).setOnUpdate ((Vector2 value) => {
-				drawLine.points [drawLine.points.Count - 1].point = value;
-				drawLine.Redraw ();
-			}).setOnComplete (() => {
-				LinePoint linePoint = new LinePoint ();
-				linePoint.point = rect.anchoredPosition;
-				drawLine.points.Add (linePoint);
-			});
+		if (Click != null) {
+			Click (Cordinate);
 		}
 	}
 }

@@ -41,8 +41,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 739b05c5ded28413d9342642e9bc3e21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawLine: {fileID: 0}
   rect: {fileID: 224118450160025040}
+  Cordinate: {x: 0, y: 0}
 --- !u!114 &114846824214484520
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -114,7 +114,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

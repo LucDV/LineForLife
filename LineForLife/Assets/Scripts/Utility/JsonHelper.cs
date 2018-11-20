@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 
 public static class JsonHelper
@@ -32,15 +33,27 @@ public static class JsonHelper
 
 	public static void WriteJson (string json)
 	{
-		if (!System.IO.File.Exists (Application.dataPath + "/" + GameData.NAME_FILE_GRAPH)) {
-			System.IO.StreamWriter fileWriter = System.IO.File.CreateText (Application.dataPath + "/" + GameData.NAME_FILE_GRAPH);
+		if (!File.Exists (Application.dataPath + "/" + GameData.NAME_FILE_GRAPH)) {
+			StreamWriter fileWriter = File.CreateText (Application.dataPath + "/" + GameData.NAME_FILE_GRAPH);
 			fileWriter.WriteLine (json);
 			fileWriter.Close ();
 		} else {
-			System.IO.StreamWriter fileWriter = new System.IO.StreamWriter (Application.dataPath + "/" + GameData.NAME_FILE_GRAPH, true);
+			StreamWriter fileWriter = new StreamWriter (Application.dataPath + "/" + GameData.NAME_FILE_GRAPH, true);
 			fileWriter.WriteLine (json);
 			fileWriter.Close ();
 		}
+	}
+
+	public static List<string> ReadJson (string nameFile)
+	{
+		List<string> list = new List<string>();
+		using (StreamReader sr = new StreamReader (Application.dataPath + "/" + nameFile)) {
+			string line;
+			while ((line = sr.ReadLine ()) != null) {
+				list.Add (line);
+			}
+		}
+		return list;
 	}
 }
 

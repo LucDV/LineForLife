@@ -71,6 +71,7 @@ public class CreateLevel : MonoBehaviour
 		graphData.Package = int.Parse(package.text);
 		graphData.numberLine = int.Parse(numberLine.text);
 		JsonHelper.WriteJson (JsonUtility.ToJson (graphData));
+		newLine = true;
 		graphData.listPath.Clear ();
 		meshLine.points.Clear ();
 		meshLine.Redraw ();
