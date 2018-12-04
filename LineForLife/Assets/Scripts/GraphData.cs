@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 [System.Serializable]
 public class GraphData {
-	public int Package;
-	public int Graph;
+	public int PackageID;
+	public int GraphID;
 	public int numberLine;
 	public List<PathData> listPath;
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GraphController : MonoBehaviour
 {
@@ -17,25 +18,26 @@ public class GraphController : MonoBehaviour
 	public GraphData Data;
 
 	public bool isNewLine;
-
 	private float sizePixel;
 	private float SizeGraph;
 	private float SizeLine;
+	private Color color;
 	private Vector2 prePos;
-	private List<PathData> listPath;
+	private List<PathData> listPath = new List<PathData>();
 	private UIMeshLine currentMeshLine;
 	[SerializeField]
-	private List<Vector2> listVertex;
+	private List<Vector2> listVertex = new List<Vector2>();
 
 	void Start ()
 	{
-		GraphData graph = JsonUtility.FromJson<GraphData> ("{\"Package\":1,\"Graph\":0,\"numberLine\":1,\"listPath\":[{\"startCor\":{\"x\":5.0,\"y\":13.0},\"endCor\":{\"x\":22.0,\"y\":8.0},\"oneWay\":false,\"repeat\":1},{\"startCor\":{\"x\":22.0,\"y\":8.0},\"endCor\":{\"x\":11.0,\"y\":19.0},\"oneWay\":false,\"repeat\":1},{\"startCor\":{\"x\":11.0,\"y\":19.0},\"endCor\":{\"x\":11.0,\"y\":7.0},\"oneWay\":false,\"repeat\":1},{\"startCor\":{\"x\":11.0,\"y\":7.0},\"endCor\":{\"x\":22.0,\"y\":18.0},\"oneWay\":false,\"repeat\":1},{\"startCor\":{\"x\":22.0,\"y\":18.0},\"endCor\":{\"x\":5.0,\"y\":13.0},\"oneWay\":false,\"repeat\":1}]}");
-		InitGraph (graph, 700, 15);
-		isNewLine = true;
+//		GraphData graph = JsonUtility.FromJson<GraphData> ("{\"Package\":1,\"Graph\":0,\"numberLine\":1,\"listPath\":[{\"startCor\":{\"x\":5.0,\"y\":13.0},\"endCor\":{\"x\":22.0,\"y\":8.0},\"oneWay\":false,\"repeat\":1},{\"startCor\":{\"x\":22.0,\"y\":8.0},\"endCor\":{\"x\":11.0,\"y\":19.0},\"oneWay\":false,\"repeat\":1},{\"startCor\":{\"x\":11.0,\"y\":19.0},\"endCor\":{\"x\":11.0,\"y\":7.0},\"oneWay\":false,\"repeat\":1},{\"startCor\":{\"x\":11.0,\"y\":7.0},\"endCor\":{\"x\":22.0,\"y\":18.0},\"oneWay\":false,\"repeat\":1},{\"startCor\":{\"x\":22.0,\"y\":18.0},\"endCor\":{\"x\":5.0,\"y\":13.0},\"oneWay\":false,\"repeat\":1}]}");
+//		InitGraph (graph, 700, 15);
+//		isNewLine = true;
 	}
 
 	public void InitGraph (GraphData data, float sizeGraph, float sizeLine)
 	{
+		ResetGraph ();
 		Data = data;
 		SizeGraph = sizeGraph;
 		SizeLine = sizeLine;
@@ -43,11 +45,19 @@ public class GraphController : MonoBehaviour
 		prePos = new Vector2 (-1, -1);
 		sizePixel = sizeGraph / GameData.SIZE_GRAPH;
 		CreateGraph ();
+		gameObject.SetActive (true);
+	}
+
+	public void SetForPlay ()
+	{
+		isNewLine = true;
+		blockTouch.gameObject.SetActive (false);
 	}
 
 	private void CreateGraph ()
 	{
-		listPath = Data.listPath;
+		color = GameManager.Instance.listColor[Random.Range(0,8)];
+		listPath.AddRange(Data.listPath);
 		foreach (PathData path in listPath) {
 			if (path.startCor != prePos) {
 				GameObject gameObj = GameManager.Instance.SpawnObject (UIMesh, placeHolder, Vector2.zero);
@@ -66,6 +76,7 @@ public class GraphController : MonoBehaviour
 			currentMeshLine.points.Add (pointLine);
 		}
 		currentMeshLine.width = SizeLine;
+		currentMeshLine.color = color;
 		currentMeshLine.Redraw ();
 		AddVertex ();
 	}
@@ -74,7 +85,7 @@ public class GraphController : MonoBehaviour
 	{
 		foreach (Vector2 cor in listVertex) {
 			GameObject gameobj = GameManager.Instance.SpawnObject (Vertex, Vertexs, GetPosByCor (cor));
-			gameobj.GetComponent<VertexController> ().InitVertex (20, cor, DrawLineWhenClick);
+			gameobj.GetComponent<VertexController> ().InitVertex (20, cor, color, DrawLineWhenClick);
 		}
 	}
 
@@ -114,4 +125,24 @@ public class GraphController : MonoBehaviour
 			});
 		}
 	}
+
+	private void ResetGraph ()
+	{
+		listPath.Clear ();
+		listVertex.Clear ();
+		ClearChild (placeHolder);
+		ClearChild (showLine);
+		ClearChild (Vertexs);
+	}
+
+	private void ClearChild (Transform tranf)
+	{
+		Transform[] listChild = tranf.GetComponentsInChildren<Transform> ();
+		foreach (Transform child in listChild) {
+			if (child != tranf) {
+				child.Recycle ();
+			}
+		}
+	}
+
 }

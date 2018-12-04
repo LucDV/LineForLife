@@ -68,7 +68,7 @@ public class CreateLevel : MonoBehaviour
 
 	public void Click ()
 	{
-		graphData.Package = int.Parse(package.text);
+		graphData.PackageID = int.Parse(package.text);
 		graphData.numberLine = int.Parse(numberLine.text);
 		JsonHelper.WriteJson (JsonUtility.ToJson (graphData));
 		newLine = true;
