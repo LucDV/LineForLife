@@ -37,7 +37,8 @@ public class BlockGraphController : MonoBehaviour
 		sizeLine = sizeline;
 		Status = currenStatus;
 		SelectBlock = selectBlock;
-		graph.InitGraph (dataGraph, sizeGraph, sizeLine);
+		Color color = GameManager.Instance.listColor[UnityEngine.Random.Range(0, 8)];
+		graph.InitGraph (dataGraph, sizeGraph, sizeLine, color);
 		ID.text = dataGraph.GraphID.ToString ();
 		switch (currenStatus) {
 		case CurrentStatus.Lock:

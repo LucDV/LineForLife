@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum StatusGame
+{
+	Menu,
+	Play,
+	Win,
+	Lose
+}
+
 public class GameManager : Singleton<GameManager>
 {
 	public int CurrentPackage;
@@ -56,14 +64,14 @@ public class GameManager : Singleton<GameManager>
 		listPackageData.Add (listGraph);
 	}
 
-	public void GotoPlay(GraphData data){
+	public void GotoPlay (GraphData data)
+	{
 		Menu.Packages.gameObject.SetActive (false);
 		Play.InitPlay (data);
 		Menu.ClickBack = () => {
-			Play.gameObject.SetActive(false);
-			Menu.ShowListGraph(CurrentPackage);
-			Menu.Packages.gameObject.SetActive(true);
+			Play.gameObject.SetActive (false);
+			Menu.ShowListGraph (CurrentPackage);
+			Menu.Packages.gameObject.SetActive (true);
 		};
 	}
-
 }

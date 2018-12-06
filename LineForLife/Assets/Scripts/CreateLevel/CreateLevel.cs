@@ -37,7 +37,7 @@ public class CreateLevel : MonoBehaviour
 		for (int i = 0; i < GameData.SIZE_GRAPH; i++) {
 			for (int j = 0; j < GameData.SIZE_GRAPH; j++) {
 				GameObject gameobj = Instantiate (pixel, Matrix.transform);
-				gameobj.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (-350 + 12.5f + j * 25, 350 - 12.5f - i * 25);
+				gameobj.GetComponent<RectTransform> ().anchoredPosition = new Vector2 (-350 + 12f + j * 24, 350 - 12f - i * 24);
 				gameobj.GetComponent<PixelController> ().InitPixel (i, j, CreateLine);
 			}
 		}

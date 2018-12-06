@@ -16,7 +16,7 @@ public class PackageController : MonoBehaviour {
 		dataPackage = data;
 		packageID = id;
 		SelectAction = select;
-		gameObject.GetComponent<Image> ().color = GameManager.Instance.listColor [packageID - 1];
+		gameObject.GetComponent<Image> ().color = GameManager.Instance.listColor [packageID%9];
 		//Rect.anchoredPosition = pos;
 	}
 

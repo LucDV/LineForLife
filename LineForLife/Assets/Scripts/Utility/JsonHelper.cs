@@ -47,11 +47,16 @@ public static class JsonHelper
 	public static List<string> ReadJson (string nameFile)
 	{
 		List<string> list = new List<string>();
-		using (StreamReader sr = new StreamReader (Application.dataPath + "/" + nameFile)) {
-			string line;
-			while ((line = sr.ReadLine ()) != null) {
-				list.Add (line);
-			}
+		TextAsset data = Resources.Load (nameFile) as TextAsset;
+		string[] linesFromFile = data.ToString().Trim().Split ("\n" [0]);
+//		using (StreamReader sr = new StreamReader (Application.dataPath + "/" + nameFile)) {
+//			string line;
+//			while ((line = sr.ReadLine ()) != null) {
+//				list.Add (line);
+//			}
+//		}
+		foreach(string line in linesFromFile){
+			list.Add (line);
 		}
 		return list;
 	}

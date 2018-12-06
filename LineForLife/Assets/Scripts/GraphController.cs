@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class GraphController : MonoBehaviour
 {
 	public RectTransform blockTouch;
 	public RectTransform Rect;
-
 	public Transform placeHolder;
 	public Transform showLine;
 	public Transform Vertexs;
@@ -16,17 +16,18 @@ public class GraphController : MonoBehaviour
 	public GameObject Vertex;
 
 	public GraphData Data;
+	public Vector2 currentNode;
 
 	public bool isNewLine;
 	private float sizePixel;
 	private float SizeGraph;
 	private float SizeLine;
 	private Color color;
-	private Vector2 prePos;
-	private List<PathData> listPath = new List<PathData>();
+	private List<PathData> listPath = new List<PathData> ();
 	private UIMeshLine currentMeshLine;
 	[SerializeField]
-	private List<Vector2> listVertex = new List<Vector2>();
+	private List<Vector2> listVertex = new List<Vector2> ();
+	private Action<Vector2, Vector2> ClickNode;
 
 	void Start ()
 	{
@@ -35,14 +36,16 @@ public class GraphController : MonoBehaviour
 //		isNewLine = true;
 	}
 
-	public void InitGraph (GraphData data, float sizeGraph, float sizeLine)
+	public void InitGraph (GraphData data, float sizeGraph, float sizeLine, Color color, Action<Vector2, Vector2> clickNode = null)
 	{
 		ResetGraph ();
 		Data = data;
 		SizeGraph = sizeGraph;
 		SizeLine = sizeLine;
+		this.color = color;
 		Rect.sizeDelta = new Vector2 (sizeGraph, sizeGraph);
-		prePos = new Vector2 (-1, -1);
+		ClickNode = clickNode;
+		currentNode = new Vector2 (-1, -1);
 		sizePixel = sizeGraph / GameData.SIZE_GRAPH;
 		CreateGraph ();
 		gameObject.SetActive (true);
@@ -50,14 +53,17 @@ public class GraphController : MonoBehaviour
 
 	public void SetForPlay ()
 	{
+
+		currentMeshLine.color = GameManager.Instance.listColor [9];
+		currentMeshLine.Redraw ();
 		isNewLine = true;
 		blockTouch.gameObject.SetActive (false);
 	}
 
 	private void CreateGraph ()
 	{
-		color = GameManager.Instance.listColor[Random.Range(0,8)];
-		listPath.AddRange(Data.listPath);
+		listPath.AddRange (Data.listPath);
+		Vector2 prePos = new Vector2 (-1, -1);
 		foreach (PathData path in listPath) {
 			if (path.startCor != prePos) {
 				GameObject gameObj = GameManager.Instance.SpawnObject (UIMesh, placeHolder, Vector2.zero);
@@ -85,7 +91,11 @@ public class GraphController : MonoBehaviour
 	{
 		foreach (Vector2 cor in listVertex) {
 			GameObject gameobj = GameManager.Instance.SpawnObject (Vertex, Vertexs, GetPosByCor (cor));
-			gameobj.GetComponent<VertexController> ().InitVertex (20, cor, color, DrawLineWhenClick);
+			gameobj.GetComponent<VertexController> ().InitVertex (20, cor, color, (Vector2 cordinate)=>{
+				if(ClickNode!= null){
+					ClickNode(currentNode, cordinate);
+				}
+			});
 		}
 	}
 
@@ -97,7 +107,9 @@ public class GraphController : MonoBehaviour
 		return pos;
 	}
 
-	private void DrawLineWhenClick (Vector2 cor)
+
+
+	public void DrawLineWhenClick (Vector2 cor)
 	{
 		if (isNewLine) {
 			GameObject gameObj = GameManager.Instance.SpawnObject (UIMesh, showLine, Vector2.zero);
@@ -112,8 +124,10 @@ public class GraphController : MonoBehaviour
 			linePoint = new LinePoint ();
 			linePoint.point = GetPosByCor (cor);
 			currentMeshLine.points.Add (linePoint);
+			currentNode = cor;
 		} else {
 			blockTouch.gameObject.SetActive (true);
+			currentMeshLine.color = color;
 			LeanTween.value (currentMeshLine.gameObject, currentMeshLine.points [currentMeshLine.points.Count - 1].point, GetPosByCor (cor), 1).setOnUpdate ((Vector2 value) => {
 				currentMeshLine.points [currentMeshLine.points.Count - 1].point = value;
 				currentMeshLine.Redraw ();
@@ -122,6 +136,8 @@ public class GraphController : MonoBehaviour
 				linePoint.point = GetPosByCor (cor);
 				currentMeshLine.points.Add (linePoint);
 				blockTouch.gameObject.SetActive (false);
+				currentNode = cor;
+				Debug.Log(GameManager.Instance.Play.CheckStatusGame(currentNode));
 			});
 		}
 	}

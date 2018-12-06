@@ -57,10 +57,10 @@ public class MenuController : MonoBehaviour
 		int numberData = data.Count;
 		int numberRow = numberData / 2 + numberData % 2;
 
-		float sizeContent = numberRow * 280 + (numberRow - 1) * 50;
+		float sizeContent = numberRow * 350 + (numberRow - 1) * 30;
 		scroll.content.sizeDelta = new Vector2 (scroll.content.sizeDelta.x, sizeContent);
 		for (int i = 0; i < numberData; i++) {
-			GameObject gameObj = GameManager.Instance.SpawnObject (blockObj, scroll.content.transform, new Vector2 (-360 + 180 + (i % 2) * 360, sizeContent / 2 - 190 - (i / 2) * 330));
+			GameObject gameObj = GameManager.Instance.SpawnObject (blockObj, scroll.content.transform, new Vector2 (-360 + 180 + (i % 2) * 360, sizeContent / 2 - 175 - (i / 2) * 380));
 			gameObj.GetComponent<BlockGraphController> ().InitBlock (data [i], 280, 7, selectBlock: GameManager.Instance.GotoPlay);
 			Packages.listContent.Add (gameObj.GetComponent<RectTransform> ());
 		}
