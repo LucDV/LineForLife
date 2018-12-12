@@ -54,7 +54,7 @@ public class MenuController : MonoBehaviour
 		btnBack.gameObject.SetActive (true);
 		ClickBack = CreatePackages;
 		ScrollRect scroll = Packages.GetComponent<ScrollRect> ();
-		int numberData = data.Count;
+		int numberData = data.Count; 
 		int numberRow = numberData / 2 + numberData % 2;
 
 		float sizeContent = numberRow * 350 + (numberRow - 1) * 30;

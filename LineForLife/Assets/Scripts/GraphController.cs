@@ -22,6 +22,7 @@ public class GraphController : MonoBehaviour
 	private float sizePixel;
 	private float SizeGraph;
 	private float SizeLine;
+	private float SizeVertex;
 	private Color color;
 	private List<PathData> listPath = new List<PathData> ();
 	private UIMeshLine currentMeshLine;
@@ -36,12 +37,13 @@ public class GraphController : MonoBehaviour
 //		isNewLine = true;
 	}
 
-	public void InitGraph (GraphData data, float sizeGraph, float sizeLine, Color color, Action<Vector2, Vector2> clickNode = null)
+	public void InitGraph (GraphData data, float sizeGraph, float sizeLine, float sizeVertex, Color color, Action<Vector2, Vector2> clickNode = null)
 	{
 		ResetGraph ();
 		Data = data;
 		SizeGraph = sizeGraph;
 		SizeLine = sizeLine;
+		SizeVertex = sizeVertex;
 		this.color = color;
 		Rect.sizeDelta = new Vector2 (sizeGraph, sizeGraph);
 		ClickNode = clickNode;
@@ -91,9 +93,9 @@ public class GraphController : MonoBehaviour
 	{
 		foreach (Vector2 cor in listVertex) {
 			GameObject gameobj = GameManager.Instance.SpawnObject (Vertex, Vertexs, GetPosByCor (cor));
-			gameobj.GetComponent<VertexController> ().InitVertex (20, cor, color, (Vector2 cordinate)=>{
-				if(ClickNode!= null){
-					ClickNode(currentNode, cordinate);
+			gameobj.GetComponent<VertexController> ().InitVertex (SizeVertex, cor, color, (Vector2 cordinate) => {
+				if (ClickNode != null) {
+					ClickNode (currentNode, cordinate);
 				}
 			});
 		}
@@ -121,25 +123,35 @@ public class GraphController : MonoBehaviour
 			LinePoint linePoint = new LinePoint ();
 			linePoint.point = GetPosByCor (cor);
 			currentMeshLine.points.Add (linePoint);
-			linePoint = new LinePoint ();
-			linePoint.point = GetPosByCor (cor);
-			currentMeshLine.points.Add (linePoint);
 			currentNode = cor;
 		} else {
 			blockTouch.gameObject.SetActive (true);
 			currentMeshLine.color = color;
+
+			LinePoint linePoint = new LinePoint ();
+			linePoint.point = currentMeshLine.points [currentMeshLine.points.Count - 1].point;
+			currentMeshLine.points.Add (linePoint);
 			LeanTween.value (currentMeshLine.gameObject, currentMeshLine.points [currentMeshLine.points.Count - 1].point, GetPosByCor (cor), 1).setOnUpdate ((Vector2 value) => {
 				currentMeshLine.points [currentMeshLine.points.Count - 1].point = value;
 				currentMeshLine.Redraw ();
 			}).setOnComplete (() => {
-				LinePoint linePoint = new LinePoint ();
-				linePoint.point = GetPosByCor (cor);
-				currentMeshLine.points.Add (linePoint);
 				blockTouch.gameObject.SetActive (false);
 				currentNode = cor;
-				Debug.Log(GameManager.Instance.Play.CheckStatusGame(currentNode));
+				Debug.Log (GameManager.Instance.Play.CheckStatusGame (currentNode));
 			});
 		}
+	}
+
+	public void BackOneLine ()
+	{
+		blockTouch.gameObject.SetActive (true);
+		LeanTween.value (currentMeshLine.gameObject, currentMeshLine.points [currentMeshLine.points.Count - 1].point, currentMeshLine.points [currentMeshLine.points.Count - 2].point, 1).setOnUpdate ((Vector2 value) => {
+			currentMeshLine.points [currentMeshLine.points.Count - 1].point = value;
+			currentMeshLine.Redraw ();
+		}).setOnComplete (() => {
+			blockTouch.gameObject.SetActive (false);
+			currentMeshLine.points.RemoveAt (currentMeshLine.points.Count - 1);
+		});
 	}
 
 	private void ResetGraph ()

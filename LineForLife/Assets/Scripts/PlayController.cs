@@ -27,7 +27,7 @@ public class PlayController : MonoBehaviour
 
 	public void InitGraphPlay (GraphData data)
 	{
-		GraphPlay.InitGraph (data, 700, 15, GameManager.Instance.listColor [Random.Range (0, 8)], HandleWhenSelectNode);
+		GraphPlay.InitGraph (data, 700, 15, GameData.SIZE_VERTEX_PLAY, GameManager.Instance.listColor [Random.Range (0, 8)], HandleWhenSelectNode);
 		GraphPlay.SetForPlay ();
 	}
 
@@ -45,10 +45,7 @@ public class PlayController : MonoBehaviour
 				return true;
 			}
 			if ((path.startCor == start && path.endCor == end) || (path.startCor == end && path.endCor == start)) {
-				if (ListNodeLatest.Count == 0 || (Vector2)ListNodeLatest.Peek () != start) {
-					ListNodeLatest.Push (start);
-				}
-				ListNodeLatest.Push (end);
+				ListNodeLatest.Push (path);
 				if (path.repeat == 1) {
 					PathAnswer.Remove (path);
 				} else {
@@ -60,10 +57,28 @@ public class PlayController : MonoBehaviour
 		return false;
 	}
 
-	public StatusGame CheckStatusGame(Vector2 currentCor){
+	public StatusGame CheckStatusGame (Vector2 currentCor)
+	{
 		if (PathAnswer.Count == 0) {
 			return StatusGame.Win;
 		}
 		return StatusGame.Play;
+	}
+
+	public void Reset ()
+	{
+		InitPlay (Data);
+	}
+
+	public void Revert ()
+	{
+		PathData pathData = (PathData)ListNodeLatest.Pop ();
+		if (pathData.startCor == GraphPlay.currentNode) {
+			GraphPlay.currentNode = pathData.endCor;
+		} else if (pathData.endCor == GraphPlay.currentNode) {
+			GraphPlay.currentNode = pathData.startCor;
+		}
+		PathAnswer.Add(pathData);
+		GraphPlay.BackOneLine ();
 	}
 }
